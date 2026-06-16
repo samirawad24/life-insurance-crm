@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Insurance CRM</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <h2>Insurance<span>CRM</span></h2>
+      <p>Lead Management</p>
+    </div>
+    <div class="sidebar-nav">
+      <a href="/dashboard.html" class="nav-item active"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="/leads.html" class="nav-item"><span class="nav-icon">👥</span> Leads</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-name" id="userName"></div>
+      <div class="user-role">Insurance Agent</div>
+      <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="header">
+      <div class="header-title">Dashboard</div>
+      <div class="header-actions">
+        <a href="/leads.html" class="btn btn-primary">+ Add Lead</a>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Leads</div><div class="stat-value blue" id="sTotal">—</div></div>
+        <div class="stat-card"><div class="stat-label">New</div><div class="stat-value" id="sNew">—</div></div>
+        <div class="stat-card"><div class="stat-label">Qualified</div><div class="stat-value amber" id="sQualified">—</div></div>
+        <div class="stat-card"><div class="stat-label">Converted</div><div class="stat-value green" id="sConverted">—</div></div>
+        <div class="stat-card"><div class="stat-label">Calls Today</div><div class="stat-value" id="sCalls">—</div></div>
+        <div class="stat-card"><div class="stat-label">Conversion Rate</div><div class="stat-value green" id="sRate">—</div></div>
+      </div>
+
+      <!-- Pipeline -->
+      <div class="pipeline">
+        <div class="pipeline-step p-new"><div class="pipeline-label">New</div><div class="pipeline-count" id="pNew">—</div></div>
+        <div class="pipeline-step p-contacted"><div class="pipeline-label">Contacted</div><div class="pipeline-count" id="pContacted">—</div></div>
+        <div class="pipeline-step p-qualified"><div class="pipeline-label">Qualified</div><div class="pipeline-count" id="pQualified">—</div></div>
+        <div class="pipeline-step p-converted"><div class="pipeline-label">Converted</div><div class="pipeline-count" id="pConverted">—</div></div>
+        <div class="pipeline-step p-lost"><div class="pipeline-label">Lost</div><div class="pipeline-count" id="pLost">—</div></div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Hot Leads -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🔥 Hot Leads</div>
+            <a href="/leads.html" class="btn btn-outline btn-sm">View All</a>
+          </div>
+          <div class="card-body" id="hotLeads">
+            <div class="empty-state"><div class="empty-icon">👥</div><p>No leads yet</p></div>
+          </div>
+        </div>
+
+        <!-- Recent Calls -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📞 Recent Calls</div>
+          </div>
+          <div id="recentCalls" style="padding: 0 20px 4px">
+            <div class="empty-state"><div class="empty-icon">📞</div><p>No calls yet</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/static/js/api.js"></script>
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>
