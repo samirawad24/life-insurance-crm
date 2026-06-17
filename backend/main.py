@@ -15,7 +15,7 @@ app.include_router(leads.router)
 app.include_router(calls.router)
 app.include_router(dashboard.router)
 
-FRONTEND = Path(__file__).parent.parent / "frontend"
+FRONTEND = Path(__file__).resolve().parent.parent / "frontend"
 app.mount("/static", StaticFiles(directory=str(FRONTEND)), name="static")
 
 
