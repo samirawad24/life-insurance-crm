@@ -1,14 +1,25 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from pathlib import Path
+from contextlib import asynccontextmanager
 from .database import engine
 from . import models
 from .routers import auth, leads, calls, dashboard
 
-models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Life Insurance CRM", version="1.0.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    models.Base.metadata.create_all(bind=engine)
+    yield
+
+
+app = FastAPI(title="Life Insurance CRM", version="1.0.0", lifespan=lifespan)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(status_code=500, content={"detail": str(exc)})
 
 app.include_router(auth.router)
 app.include_router(leads.router)
