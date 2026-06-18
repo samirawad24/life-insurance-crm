@@ -46,5 +46,5 @@ def send_lead_notification(lead):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
             server.send_message(msg)
-    except Exception:
-        pass  # never block lead saving if email fails
+    except Exception as e:
+        print(f"[notifications] email failed: {e}")

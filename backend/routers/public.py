@@ -55,6 +55,7 @@ def submit_lead(data: PublicLead, db: Session = Depends(get_db)):
 
     lead.score = calculate_score(lead, 0, 0)
     db.commit()
+    db.refresh(lead)
 
     send_lead_notification(lead)
 
