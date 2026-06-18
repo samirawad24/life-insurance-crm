@@ -9,3 +9,9 @@ services:
         generateValue: true
       - key: DATABASE_URL
         value: sqlite:////tmp/crm.db
+      - key: GMAIL_USER
+        value: samirawad24@gmail.com
+      - key: NOTIFY_EMAIL
+        value: samirawad24@gmail.com
+      - key: GMAIL_APP_PASSWORD
+        sync: false
