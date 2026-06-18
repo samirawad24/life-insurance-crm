@@ -23,30 +23,25 @@ class PublicLead(BaseModel):
     message: Optional[str] = None
 
 
-@router.get("/test-email")
-def test_email():
+@router.get("/test-notification")
+def test_notification():
     import os, urllib.request, json
-    key = os.getenv("RESEND_API_KEY", "NOT SET")
-    notify = os.getenv("NOTIFY_EMAIL", "NOT SET")
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "NOT SET")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID", "NOT SET")
     try:
         payload = json.dumps({
-            "from": "Florida Life Insurance CRM <onboarding@resend.dev>",
-            "to": [notify],
-            "subject": "CRM Test Notification",
-            "text": "Test from your Life Insurance CRM on Render."
+            "chat_id": chat_id,
+            "text": "Test from your Life Insurance CRM — notifications are working!"
         }).encode("utf-8")
         req = urllib.request.Request(
-            "https://api.resend.com/emails",
+            f"https://api.telegram.org/bot{token}/sendMessage",
             data=payload,
-            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+            headers={"Content-Type": "application/json"}
         )
         with urllib.request.urlopen(req, timeout=10) as res:
-            return {"status": "sent", "to": notify, "resend_status": res.status}
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8")
-        return {"status": "failed", "http_error": e.code, "resend_response": body, "key_set": key != "NOT SET"}
+            return {"status": "sent", "chat_id": chat_id}
     except Exception as e:
-        return {"status": "failed", "error": str(e), "key_set": key != "NOT SET"}
+        return {"status": "failed", "error": str(e)}
 
 
 @router.post("/lead")
