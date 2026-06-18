@@ -25,23 +25,25 @@ class PublicLead(BaseModel):
 
 @router.get("/test-email")
 def test_email():
-    import smtplib, os
-    from email.mime.text import MIMEText
-    user = os.getenv("GMAIL_USER", "NOT SET")
-    pw = os.getenv("GMAIL_APP_PASSWORD", "NOT SET")
+    import os, urllib.request, json
+    key = os.getenv("RESEND_API_KEY", "NOT SET")
     notify = os.getenv("NOTIFY_EMAIL", "NOT SET")
     try:
-        msg = MIMEText("Test from Render CRM")
-        msg["From"] = user
-        msg["To"] = notify
-        msg["Subject"] = "Render Email Test"
-        with smtplib.SMTP("smtp.gmail.com", 587) as s:
-            s.starttls()
-            s.login(user, pw)
-            s.send_message(msg)
-        return {"status": "sent", "from": user, "to": notify}
+        payload = json.dumps({
+            "from": "Florida Life Insurance CRM <onboarding@resend.dev>",
+            "to": [notify],
+            "subject": "CRM Test Notification",
+            "text": "Test from your Life Insurance CRM on Render."
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            "https://api.resend.com/emails",
+            data=payload,
+            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req, timeout=10) as res:
+            return {"status": "sent", "to": notify, "resend_status": res.status}
     except Exception as e:
-        return {"status": "failed", "error": str(e), "user": user, "pw_length": len(pw)}
+        return {"status": "failed", "error": str(e), "key_set": key != "NOT SET"}
 
 
 @router.post("/lead")

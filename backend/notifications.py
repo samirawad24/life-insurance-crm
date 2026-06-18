@@ -1,21 +1,20 @@
-import smtplib
 import os
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import urllib.request
+import urllib.error
+import json
 
-GMAIL_USER = os.getenv("GMAIL_USER", "")
-GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
-NOTIFY_EMAIL = os.getenv("NOTIFY_EMAIL", GMAIL_USER)
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+NOTIFY_EMAIL = os.getenv("NOTIFY_EMAIL", "samirawad24@gmail.com")
 
 
 def send_lead_notification(lead):
-    if not GMAIL_USER or not GMAIL_APP_PASSWORD:
+    if not RESEND_API_KEY:
+        print("[notifications] RESEND_API_KEY not set")
         return
 
     try:
         name = f"{lead.first_name} {lead.last_name}".strip()
         coverage_type = lead.coverage_type or "Unknown"
-        subject = f"New Lead: {name} — {coverage_type}"
 
         lines = [
             f"Name:          {name}",
@@ -35,17 +34,23 @@ def send_lead_notification(lead):
         if lead.notes:
             lines.append(f"Notes:         {lead.notes}")
 
-        body = "\n".join(lines)
+        payload = json.dumps({
+            "from": "Florida Life Insurance CRM <onboarding@resend.dev>",
+            "to": [NOTIFY_EMAIL],
+            "subject": f"New Lead: {name} — {coverage_type}",
+            "text": "\n".join(lines)
+        }).encode("utf-8")
 
-        msg = MIMEMultipart()
-        msg["From"] = GMAIL_USER
-        msg["To"] = NOTIFY_EMAIL
-        msg["Subject"] = subject
-        msg.attach(MIMEText(body, "plain"))
+        req = urllib.request.Request(
+            "https://api.resend.com/emails",
+            data=payload,
+            headers={
+                "Authorization": f"Bearer {RESEND_API_KEY}",
+                "Content-Type": "application/json"
+            }
+        )
+        with urllib.request.urlopen(req, timeout=10) as res:
+            print(f"[notifications] Resend OK: {res.status}")
 
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls()
-            server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
-            server.send_message(msg)
     except Exception as e:
-        print(f"[notifications] email failed: {e}")
+        print(f"[notifications] Resend failed: {e}")
