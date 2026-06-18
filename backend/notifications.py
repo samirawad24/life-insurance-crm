@@ -20,12 +20,11 @@ def send_lead_notification(lead):
             f"Phone: {lead.phone or 'N/A'}",
             f"Email: {lead.email or 'N/A'}",
             f"Age: {lead.age or 'N/A'}",
-            f"Source: {lead.source or 'website'}",
         ]
-        if lead.coverage_amount:
-            lines.append(f"Coverage: ${lead.coverage_amount:,.0f}")
         if lead.health_status:
             lines.append(f"Health: {lead.health_status}")
+        if lead.coverage_amount:
+            lines.append(f"Coverage: ${lead.coverage_amount:,.0f}")
         if lead.score is not None:
             lines.append(f"Score: {lead.score}/100")
         if lead.notes:
