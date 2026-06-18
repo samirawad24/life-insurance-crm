@@ -15,3 +15,7 @@ services:
         value: samirawad24@gmail.com
       - key: GMAIL_APP_PASSWORD
         sync: false
+      - key: TELEGRAM_CHAT_ID
+        value: "6092227774"
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
