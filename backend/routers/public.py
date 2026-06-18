@@ -6,6 +6,7 @@ from ..database import get_db
 from ..models import Lead, User, BookedSlot
 from ..scoring import calculate_score
 from ..notifications import send_lead_notification
+from ..calendar_utils import create_appointment_event
 
 router = APIRouter(prefix="/api/public", tags=["public"])
 
@@ -65,6 +66,7 @@ def submit_lead(data: PublicLead, db: Session = Depends(get_db)):
         slot = BookedSlot(slot_date=data.appointment_date, slot_time=data.appointment_time)
         db.add(slot)
         db.commit()
+        create_appointment_event(lead, data.appointment_date, data.appointment_time, data.coverage_type or "phone")
 
     send_lead_notification(lead)
 
