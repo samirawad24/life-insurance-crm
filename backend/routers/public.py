@@ -35,7 +35,8 @@ def test_email():
         msg["From"] = user
         msg["To"] = notify
         msg["Subject"] = "Render Email Test"
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
+        with smtplib.SMTP("smtp.gmail.com", 587) as s:
+            s.starttls()
             s.login(user, pw)
             s.send_message(msg)
         return {"status": "sent", "from": user, "to": notify}
