@@ -24,23 +24,6 @@ class PublicLead(BaseModel):
 
 
 
-@router.get("/test-notification")
-def test_notification():
-    import os, urllib.request, json
-    token = os.getenv("TELEGRAM_BOT_TOKEN", "NOT SET")
-    chat_id = os.getenv("TELEGRAM_CHAT_ID", "NOT SET")
-    try:
-        payload = json.dumps({"chat_id": chat_id, "text": "CRM notification test"}).encode("utf-8")
-        req = urllib.request.Request(
-            f"https://api.telegram.org/bot{token}/sendMessage",
-            data=payload,
-            headers={"Content-Type": "application/json"}
-        )
-        with urllib.request.urlopen(req, timeout=10) as res:
-            return {"status": "sent", "token_set": token != "NOT SET", "chat_id": chat_id}
-    except Exception as e:
-        return {"status": "failed", "error": str(e), "token_set": token != "NOT SET", "chat_id": chat_id}
-
 
 @router.post("/lead")
 def submit_lead(data: PublicLead, db: Session = Depends(get_db)):
