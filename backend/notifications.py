@@ -14,14 +14,13 @@ def send_lead_notification(lead):
 
     try:
         name = f"{lead.first_name} {lead.last_name}".strip()
-        coverage_type = lead.coverage_type or "Unknown"
 
         lines = [
             f"New Lead: {name}",
             f"Phone: {lead.phone or 'N/A'}",
             f"Email: {lead.email or 'N/A'}",
             f"Age: {lead.age or 'N/A'}",
-            f"Type: {coverage_type}",
+            f"Source: {lead.source or 'website'}",
         ]
         if lead.coverage_amount:
             lines.append(f"Coverage: ${lead.coverage_amount:,.0f}")

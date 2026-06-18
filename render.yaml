@@ -1,3 +1,9 @@
+databases:
+  - name: life-insurance-crm-db
+    plan: free
+    databaseName: crm
+    user: crm
+
 services:
   - type: web
     name: life-insurance-crm
@@ -8,7 +14,9 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
-        value: sqlite:////tmp/crm.db
+        fromDatabase:
+          name: life-insurance-crm-db
+          property: connectionString
       - key: GMAIL_USER
         value: samirawad24@gmail.com
       - key: NOTIFY_EMAIL
