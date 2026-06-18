@@ -75,3 +75,24 @@ def submit_lead(data: PublicLead, db: Session = Depends(get_db)):
 def get_booked_slots(db: Session = Depends(get_db)):
     slots = db.query(BookedSlot).all()
     return [{"date": s.slot_date, "time": s.slot_time} for s in slots]
+
+
+@router.get("/test-telegram")
+def test_telegram():
+    import os, urllib.request, urllib.parse, json as _json
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID", "")
+    if not token or not chat_id:
+        return {"ok": False, "error": "Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID env vars"}
+    try:
+        payload = _json.dumps({"chat_id": chat_id, "text": "Test from Life Insurance CRM"}).encode()
+        req = urllib.request.Request(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            data=payload,
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req, timeout=10) as res:
+            body = _json.loads(res.read())
+            return {"ok": True, "telegram_response": body}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
