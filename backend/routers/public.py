@@ -42,6 +42,9 @@ def test_email():
         )
         with urllib.request.urlopen(req, timeout=10) as res:
             return {"status": "sent", "to": notify, "resend_status": res.status}
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8")
+        return {"status": "failed", "http_error": e.code, "resend_response": body, "key_set": key != "NOT SET"}
     except Exception as e:
         return {"status": "failed", "error": str(e), "key_set": key != "NOT SET"}
 
