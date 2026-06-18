@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
 from ..database import get_db
-from ..models import Lead, User
+from ..models import Lead, User, BookedSlot
 from ..scoring import calculate_score
 from ..notifications import send_lead_notification
 
@@ -21,6 +21,8 @@ class PublicLead(BaseModel):
     coverage_amount: Optional[float] = None
     health_status: Optional[str] = None
     message: Optional[str] = None
+    appointment_date: Optional[str] = None
+    appointment_time: Optional[str] = None
 
 
 
@@ -59,6 +61,17 @@ def submit_lead(data: PublicLead, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(lead)
 
+    if data.appointment_date and data.appointment_time:
+        slot = BookedSlot(slot_date=data.appointment_date, slot_time=data.appointment_time)
+        db.add(slot)
+        db.commit()
+
     send_lead_notification(lead)
 
     return {"success": True}
+
+
+@router.get("/slots")
+def get_booked_slots(db: Session = Depends(get_db)):
+    slots = db.query(BookedSlot).all()
+    return [{"date": s.slot_date, "time": s.slot_time} for s in slots]

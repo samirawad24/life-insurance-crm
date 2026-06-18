@@ -55,3 +55,12 @@ class Call(Base):
 
     lead = relationship("Lead", back_populates="calls")
     user = relationship("User", back_populates="calls")
+
+
+class BookedSlot(Base):
+    __tablename__ = "booked_slots"
+
+    id = Column(Integer, primary_key=True, index=True)
+    slot_date = Column(String, nullable=False)  # e.g. "Mon, Jun 17"
+    slot_time = Column(String, nullable=False)  # e.g. "9:30 AM"
+    created_at = Column(DateTime, default=datetime.utcnow)
