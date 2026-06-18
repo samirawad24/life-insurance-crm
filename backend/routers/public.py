@@ -23,6 +23,26 @@ class PublicLead(BaseModel):
     message: Optional[str] = None
 
 
+@router.get("/test-email")
+def test_email():
+    import smtplib, os
+    from email.mime.text import MIMEText
+    user = os.getenv("GMAIL_USER", "NOT SET")
+    pw = os.getenv("GMAIL_APP_PASSWORD", "NOT SET")
+    notify = os.getenv("NOTIFY_EMAIL", "NOT SET")
+    try:
+        msg = MIMEText("Test from Render CRM")
+        msg["From"] = user
+        msg["To"] = notify
+        msg["Subject"] = "Render Email Test"
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
+            s.login(user, pw)
+            s.send_message(msg)
+        return {"status": "sent", "from": user, "to": notify}
+    except Exception as e:
+        return {"status": "failed", "error": str(e), "user": user, "pw_length": len(pw)}
+
+
 @router.post("/lead")
 def submit_lead(data: PublicLead, db: Session = Depends(get_db)):
     agent = db.query(User).first()
