@@ -79,6 +79,29 @@ def get_booked_slots(db: Session = Depends(get_db)):
     return [{"date": s.slot_date, "time": s.slot_time} for s in slots]
 
 
+@router.get("/test-calendar")
+def test_calendar():
+    import os, json, base64
+    creds_b64 = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON_B64", "")
+    cal_id = os.getenv("GOOGLE_CALENDAR_ID", "")
+    if not creds_b64:
+        return {"ok": False, "error": "GOOGLE_SERVICE_ACCOUNT_JSON_B64 not set"}
+    if not cal_id:
+        return {"ok": False, "error": "GOOGLE_CALENDAR_ID not set"}
+    try:
+        from google.oauth2 import service_account
+        from googleapiclient.discovery import build
+        creds_json = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+        creds = service_account.Credentials.from_service_account_info(
+            creds_json, scopes=["https://www.googleapis.com/auth/calendar"]
+        )
+        service = build("calendar", "v3", credentials=creds, cache_discovery=False)
+        cal = service.calendars().get(calendarId=cal_id).execute()
+        return {"ok": True, "calendar": cal.get("summary"), "id": cal.get("id")}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
 @router.get("/test-telegram")
 def test_telegram():
     import os, urllib.request, urllib.parse, json as _json
